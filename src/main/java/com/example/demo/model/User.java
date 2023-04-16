@@ -1,5 +1,6 @@
 package com.example.demo.model;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -13,12 +14,17 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import com.example.demo.model.exam.Result;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 //creates entity in database
 @Entity
 @Table(name="users")
-public class User {
+//new class is also okay for userDetaikls
+public class User implements UserDetails{
 	
 	//id is basically primary key
 	@Id
@@ -55,7 +61,7 @@ public class User {
 	}
 
 	public User(int id, String fname, String lname, String username, String password, String phone, String email,
-			boolean enable) {
+			boolean enable,Set<UserRole> userrole) {
 		super();
 		this.id = id;
 		this.fname = fname;
@@ -65,6 +71,14 @@ public class User {
 		this.phone = phone;
 		this.email = email;
 		this.enable = enable;
+		this.userrole=new HashSet<>();
+	}
+
+	@Override
+	public String toString() {
+		return "User [id=" + id + ", fname=" + fname + ", lname=" + lname + ", username=" + username + ", password="
+				+ password + ", phone=" + phone + ", email=" + email + "userrole=" + userrole
+				+ ", enable=" + enable + "]";
 	}
 
 	private boolean enable=true;
@@ -132,7 +146,46 @@ public class User {
 	public void setEnable(boolean enable) {
 		this.enable = enable;
 	}
+
 	
+	//userdetails method
 	
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		
+		Set<Authority> set=new HashSet<>();
+		
+		
+		this.userrole.forEach(u ->
+		{///here get name means userrole name
+			//mnje admin asel tr admin kiva normal store hoyil
+			set.add(new Authority(u.getRole().getName()));
+		});
+		return set;
+	}
+
+	@Override
+	public boolean isAccountNonExpired() {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
+	@Override
+	public boolean isAccountNonLocked() {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
+	@Override
+	public boolean isCredentialsNonExpired() {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
+	@Override
+	public boolean isEnabled() {
+		// TODO Auto-generated method stub
+		return true;
+	}
 	
 }

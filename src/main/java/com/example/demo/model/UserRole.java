@@ -8,6 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
 //it is basical relation Table
+
 @Entity
 public class UserRole {
 	@Id
